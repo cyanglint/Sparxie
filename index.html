@@ -12,128 +12,82 @@
             --text-color: #e0e0e0;
             --highlight: #f39c12;
             --border-color: #34495e;
+            --disabled-opacity: 0.25;
         }
 
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            font-family: 'Pretendard', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 20px;
         }
 
         .container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid var(--border-color);
+            width: 100%; max-width: 500px;
+            background: var(--card-bg); border-radius: 16px;
+            padding: 30px; border: 1px solid var(--border-color);
         }
 
-        h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        h1 { text-align: center; font-size: 1.3rem; margin-bottom: 25px; color: var(--accent-color); letter-spacing: 1px; }
 
-        .section {
-            margin-bottom: 25px;
-        }
+        .section { margin-bottom: 20px; }
+        .section-title { font-size: 0.85rem; color: #888; margin-bottom: 12px; border-left: 3px solid var(--accent-color); padding-left: 10px; }
 
-        .section-title {
-            font-size: 0.9rem;
-            color: #888;
-            margin-bottom: 15px;
-            border-left: 4px solid var(--accent-color);
-            padding-left: 10px;
-        }
-
-        .input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .input-box {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            font-size: 0.85rem;
-            margin-bottom: 5px;
-        }
-
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 65px; }
+        .input-box { display: flex; flex-direction: column; transition: opacity 0.3s; }
+        .input-box.disabled { opacity: var(--disabled-opacity); pointer-events: none; }
+        
+        label { font-size: 0.75rem; margin-bottom: 4px; color: #aaa; }
         input[type="number"] {
-            background: #2c3e50;
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 1rem;
+            background: #2c3e50; border: 1px solid var(--border-color);
+            color: white; padding: 10px; border-radius: 8px; font-size: 0.95rem;
         }
 
-        .buff-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
+        .buff-group { display: flex; flex-direction: column; gap: 6px; }
         .checkbox-container {
-            display: flex;
-            align-items: center;
-            background: rgba(255,255,255,0.05);
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
+            display: flex; align-items: center;
+            background: rgba(255,255,255,0.03);
+            padding: 10px 14px; border-radius: 8px; cursor: pointer;
+            transition: all 0.3s; border: 1px solid transparent;
         }
+        .checkbox-container.active { background: rgba(74, 144, 226, 0.08); border-color: rgba(74, 144, 226, 0.3); }
+        .checkbox-container input { margin-right: 12px; }
 
-        .checkbox-container:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .checkbox-container input {
-            margin-right: 12px;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
+        .sub-option-wrapper { min-height: 45px; margin-top: 4px; transition: opacity 0.3s; }
+        .sub-option-wrapper.disabled { opacity: var(--disabled-opacity); pointer-events: none; }
+        .sub-option { margin-left: 20px; font-size: 0.85rem; }
 
         .results {
-            background: rgba(74, 144, 226, 0.1);
-            border: 1px dashed var(--accent-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 30px;
+            background: rgba(74, 144, 226, 0.05);
+            border-radius: 12px; padding: 18px; margin-top: 20px;
+            border: 1px solid rgba(74, 144, 226, 0.2);
         }
 
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-        }
+        .result-item { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.9rem; }
+        .av-details { font-size: 0.8rem; color: #777; transition: opacity 0.3s; }
+        .av-details.hidden { display: none; }
 
-        .result-item.main {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 15px;
-            margin-top: 10px;
-            font-weight: bold;
-            color: var(--highlight);
-            font-size: 1.1rem;
+        .main-result-area {
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 12px; margin-top: 10px; text-align: right;
         }
+        .target-val { font-size: 1.3rem; font-weight: bold; color: var(--highlight); margin: 2px 0; }
+        .val { font-family: 'Monaco', 'Consolas', monospace; }
 
-        .val { font-family: monospace; }
+        /* 검산 버튼 및 박스 */
+        #debugBtn {
+            background: none; border: 1px solid #444; color: #777;
+            padding: 5px 10px; border-radius: 4px; font-size: 0.7rem;
+            cursor: pointer; margin-top: 15px; transition: all 0.2s;
+            width: 100%; display: none; /* 기본 숨김 */
+        }
+        #debugBtn:hover { color: var(--text-color); border-color: #666; }
+        .debug-box {
+            margin-top: 10px; padding: 12px; background: rgba(0,0,0,0.3);
+            border-radius: 8px; font-size: 0.75rem; color: #999;
+            line-height: 1.6; display: none;
+        }
     </style>
 </head>
 <body>
@@ -142,121 +96,147 @@
     <h1>SPEED CALCULATOR</h1>
 
     <div class="section">
-        <div class="section-title">기본 마을 속도 입력</div>
-        <div class="input-group">
-            <div class="input-box">
-                <label>은랑</label>
-                <input type="number" id="swBase" value="140" step="0.1" oninput="calculate()">
-            </div>
-            <div class="input-box">
-                <label>효광</label>
-                <input type="number" id="hkBase" value="140" step="0.1" oninput="calculate()">
-            </div>
+        <div class="section-title">캐릭터 마을 속도</div>
+        <div class="input-grid">
+            <div class="input-box"><label>은랑</label><input type="number" id="swBase" value="200" step="0.1" oninput="calculate()"></div>
+            <div class="input-box"><label>효광</label><input type="number" id="hkBase" value="200" step="0.1" oninput="calculate()"></div>
+        </div>
+        <div class="input-grid" style="margin-top:8px;">
+            <div class="input-box" id="hyBox"><label>히아킨 (2돌 시)</label><input type="number" id="hyBase" value="200" step="0.1" oninput="calculate()"></div>
         </div>
     </div>
 
     <div class="section">
         <div class="section-title">버프 활성화</div>
         <div class="buff-group">
-            <label class="checkbox-container">
-                <input type="checkbox" id="buffHK" onchange="calculate()"> 효광 2돌 (기초 속도 12%)
-            </label>
-            <label class="checkbox-container">
-                <input type="checkbox" id="buffHH" onchange="calculate()"> 곽향 1돌 (기초 속도 12%)
-            </label>
-            <label class="checkbox-container">
-                <input type="checkbox" id="buffHY" onchange="calculate()"> 히아킨 2돌 (기초 속도 38%)
-            </label>
+            <label class="checkbox-container" id="lblHK"><input type="checkbox" id="buffHK" onchange="updateUI()"> 효광 2돌 (12%)</label>
+            <label class="checkbox-container" id="lblHH"><input type="checkbox" id="buffHH" onchange="updateUI()"> 곽향 1돌 (12%)</label>
+            <label class="checkbox-container" id="lblHY"><input type="checkbox" id="buffHY" onchange="updateUI()"> 히아킨 2돌 (38%, 지연 적용)</label>
+            <div id="msWrapper" class="sub-option-wrapper">
+                <label class="checkbox-container sub-option" id="lblMS">
+                    <input type="checkbox" id="buffMS" onchange="updateUI()"> ㄴ 메신저 사용(+12%)
+                </label>
+            </div>
         </div>
     </div>
 
     <div class="results">
-        <div class="section-title" style="border-color: var(--highlight); color: var(--highlight);">계산 결과</div>
-        <div class="result-item">
-            <span>은랑 전투 속도</span>
-            <span class="val" id="swCombat">-</span>
+        <div class="result-item"><span>은랑 전투 속도</span><span class="val" id="resSW">-</span></div>
+        <div class="result-item"><span>효광 전투 속도</span><span class="val" id="resHK">-</span></div>
+        <div class="result-item"><span>아하 전투 속도</span><span class="val" id="resAhaV">-</span></div>
+        
+        <div id="avDisplay" class="av-details">
+            <div class="result-item"><span>ㄴ 아하 첫 턴 AV</span><span class="val" id="resAhaAv">-</span></div>
+            <div class="result-item" style="color:var(--accent-color)"><span>ㄴ 스파키 첫 턴 AV</span><span class="val" id="resSpAv">-</span></div>
         </div>
-        <div class="result-item">
-            <span>효광 전투 속도</span>
-            <span class="val" id="hkCombat">-</span>
-        </div>
-        <div class="result-item">
-            <span>아하 전투 속도</span>
-            <span class="val" id="ahaCombat">-</span>
-        </div>
-        <div class="result-item main">
-            <span>스파키 목표 마을 속도</span>
-            <span class="val" id="spTargetBase">-</span>
-        </div>
-        <div style="font-size: 0.75rem; color: #777; margin-top: 10px; text-align: center;">
-            * 아하보다 0.01 이상 빠르게 계산됨
+
+        <div class="main-result-area">
+            <div style="font-size:0.8rem; color:#888;">스파키 목표 마을 속도</div>
+            <div class="target-val" id="resSpTarget">-</div>
+            <div class="combat-sub">전투 속도: <span id="resSP" class="val" style="color:var(--text-color)">-</span></div>
         </div>
     </div>
+
+    <button id="debugBtn" onclick="toggleDebug()">[상세 검산 데이터 확인]</button>
+    <div id="debugBox" class="debug-box"></div>
 </div>
 
 <script>
-    function calculate() {
-        // 기초 수치
-        const SW_STAT = 110;
-        const HK_STAT = 101;
-        const SP_STAT = 107;
+    function toggleDebug() {
+        const box = document.getElementById('debugBox');
+        box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+    }
 
-        // 입력값
+    function updateUI() {
+        const isHy = document.getElementById('buffHY').checked;
+        document.getElementById('hyBox').classList.toggle('disabled', !isHy);
+        document.getElementById('msWrapper').classList.toggle('disabled', !isHy);
+        document.getElementById('avDisplay').classList.toggle('hidden', !isHy);
+        
+        // 히아킨 2돌 활성화 시에만 검산 버튼 노출
+        const debugBtn = document.getElementById('debugBtn');
+        const debugBox = document.getElementById('debugBox');
+        if (isHy) {
+            debugBtn.style.display = 'block';
+        } else {
+            debugBtn.style.display = 'none';
+            debugBox.style.display = 'none';
+        }
+
+        ['HK', 'HH', 'HY', 'MS'].forEach(id => {
+            const cb = document.getElementById('buff' + id);
+            document.getElementById('lbl' + id).classList.toggle('active', cb.checked);
+        });
+        if (!isHy) document.getElementById('buffMS').checked = false;
+        calculate();
+    }
+
+    function calculate() {
+        const STATS = { SW: 110, HK: 101, SP: 107, HY: 100 };
         const swBase = parseFloat(document.getElementById('swBase').value) || 0;
         const hkBase = parseFloat(document.getElementById('hkBase').value) || 0;
-
-        // 버프 체크
+        const hyBase = parseFloat(document.getElementById('hyBase').value) || 0;
         const bHK = document.getElementById('buffHK').checked;
         const bHH = document.getElementById('buffHH').checked;
         const bHY = document.getElementById('buffHY').checked;
+        const bMS = document.getElementById('buffMS').checked;
 
-        const getBuffBonus = (stat) => {
-            let bonus = 0;
-            if (bHK) bonus += stat * 0.12;
-            if (bHH) bonus += stat * 0.12;
-            if (bHY) bonus += stat * 0.38;
-            return bonus;
-        };
+        const hyRate = bMS ? 0.50 : 0.38;
+        const getCB = (s) => (bHK ? s * 0.12 : 0) + (bHH ? s * 0.12 : 0);
 
-        // 은랑, 효광 전투 속도
-        const swCombat = swBase + getBuffBonus(SW_STAT);
-        const hkCombat = hkBase + getBuffBonus(HK_STAT);
-
-        document.getElementById('swCombat').innerText = swCombat.toFixed(2);
-        document.getElementById('hkCombat').innerText = hkCombat.toFixed(2);
-
-        // 스파키 최적화 계산 로직
-        const o1 = Math.max(swCombat, hkCombat);
-        const o2 = Math.min(swCombat, hkCombat);
-
-        // 아하 속도 결정 공식에 따른 3가지 케이스 역산
-        // T1: 스파키가 1위일 때, T2: 2위일 때, T3: 3위일 때
-        const t1 = (80 + o1/10 + o2/20) * 1.25;
-        const t2 = (80 + o1/5 + o2/20) * 1.111111;
-        const t3 = (80 + o1/5 + o2/10) * 1.052631;
-
-        let requiredCombat;
-        if (t1 > o1) {
-            requiredCombat = t1 + 0.01;
-        } else if (t2 > o2) {
-            requiredCombat = t2 + 0.01;
-        } else {
-            requiredCombat = t3 + 0.01;
+        const swC = getCB(STATS.SW), hkC = getCB(STATS.HK), spC = getCB(STATS.SP);
+        const swPre = swBase + swC, hkPre = hkBase + hkC;
+        
+        let b = 0;
+        if (bHY) {
+            const hyPre = hyBase + getCB(STATS.HY);
+            b = 10000 / Math.min(swPre, hyPre); 
         }
 
-        // 결과 역산 (전투 -> 마을)
-        const spTargetBase = requiredCombat - getBuffBonus(SP_STAT);
-        
-        // 아하 최종 속도 (검증용)
-        const speeds = [swCombat, hkCombat, requiredCombat].sort((a,b) => b - a);
-        const ahaCombat = 80 + speeds[0]/5 + speeds[1]/10 + speeds[2]/20;
+        function getAhaSpeed(v1, v2, v3) {
+            const sorted = [v1, v2, v3].sort((a, b) => b - a);
+            return 80 + (sorted[0] / 5) + (sorted[1] / 10) + (sorted[2] / 20);
+        }
 
-        document.getElementById('spTargetBase').innerText = spTargetBase.toFixed(2);
-        document.getElementById('ahaCombat').innerText = ahaCombat.toFixed(2);
+        function runSim(spBase) {
+            const spPre = spBase + spC;
+            const swP = swPre + (bHY ? STATS.SW * hyRate : 0);
+            const hkP = hkPre + (bHY ? STATS.HK * hyRate : 0);
+            const spP = spPre + (bHY ? STATS.SP * hyRate : 0);
+            const vAhaPre = getAhaSpeed(swPre, hkPre, spPre);
+            const vAhaPost = getAhaSpeed(swP, hkP, spP);
+            const ahaAv = bHY ? (b + (10000 - (vAhaPre * b)) / vAhaPost) : (10000 / vAhaPost);
+            const spAv = bHY ? (b + (10000 - (spPre * b)) / spP) : (10000 / spP);
+            return { ahaAv, spAv, swP, hkP, spP, vAhaPost, vAhaPre, b };
+        }
+
+        let low = 50, high = 400, best = 400;
+        for(let i=0; i<50; i++) {
+            let mid = (low + high) / 2;
+            let r = runSim(mid);
+            if (r.spAv < (r.ahaAv - 0.009999)) { best = mid; high = mid; } else { low = mid; }
+        }
+
+        const f = runSim(best);
+        document.getElementById('resSW').innerText = f.swP.toFixed(2);
+        document.getElementById('resHK').innerText = f.hkP.toFixed(2);
+        document.getElementById('resSP').innerText = f.spP.toFixed(2);
+        document.getElementById('resAhaV').innerText = f.vAhaPost.toFixed(2);
+        document.getElementById('resSpTarget').innerText = best.toFixed(2);
+        document.getElementById('resAhaAv').innerText = f.ahaAv.toFixed(3);
+        document.getElementById('resSpAv').innerText = f.spAv.toFixed(3);
+
+        document.getElementById('debugBox').innerHTML = `
+            <b>[Internal High-Precision Data]</b><br>
+            - 지연 시점 (b): ${f.b.toFixed(6)} AV<br>
+            - 아하 Pre 속도: ${f.vAhaPre.toFixed(6)}<br>
+            - 아하 Post 속도: ${f.vAhaPost.toFixed(6)}<br>
+            - AV 차이 (Aha - Sparky): ${(f.ahaAv - f.spAv).toFixed(6)}<br>
+            - 버프 배율: ${(hyRate*100).toFixed(0)}% (메신저: ${bMS?'ON':'OFF'})
+        `;
     }
-
-    // 초기 실행
-    window.onload = calculate;
+    
+    window.onload = updateUI;
 </script>
 
 </body>
