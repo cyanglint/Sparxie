@@ -75,12 +75,11 @@
         .target-val { font-size: 1.3rem; font-weight: bold; color: var(--highlight); margin: 2px 0; }
         .val { font-family: 'Monaco', 'Consolas', monospace; }
 
-        /* 검산 버튼 및 박스 */
         #debugBtn {
             background: none; border: 1px solid #444; color: #777;
             padding: 5px 10px; border-radius: 4px; font-size: 0.7rem;
             cursor: pointer; margin-top: 15px; transition: all 0.2s;
-            width: 100%; display: none; /* 기본 숨김 */
+            width: 100%; display: none;
         }
         #debugBtn:hover { color: var(--text-color); border-color: #666; }
         .debug-box {
@@ -114,7 +113,7 @@
             <label class="checkbox-container" id="lblHY"><input type="checkbox" id="buffHY" onchange="updateUI()"> 히아킨 2돌 (38%, 지연 적용)</label>
             <div id="msWrapper" class="sub-option-wrapper">
                 <label class="checkbox-container sub-option" id="lblMS">
-                    <input type="checkbox" id="buffMS" onchange="updateUI()"> ㄴ 메신저 사용(+12%)
+                    <input type="checkbox" id="buffMS" onchange="updateUI()"> ㄴ 메신저 사용 (+12%)
                 </label>
             </div>
         </div>
@@ -133,7 +132,7 @@
         <div class="main-result-area">
             <div style="font-size:0.8rem; color:#888;">스파키 목표 마을 속도</div>
             <div class="target-val" id="resSpTarget">-</div>
-            <div class="combat-sub">전투 속도: <span id="resSP" class="val" style="color:var(--text-color)">-</span></div>
+            <div class="combat-sub">스파키 전투 속도: <span id="resSP" class="val" style="color:var(--text-color)">-</span></div>
         </div>
     </div>
 
@@ -152,17 +151,9 @@
         document.getElementById('hyBox').classList.toggle('disabled', !isHy);
         document.getElementById('msWrapper').classList.toggle('disabled', !isHy);
         document.getElementById('avDisplay').classList.toggle('hidden', !isHy);
-        
-        // 히아킨 2돌 활성화 시에만 검산 버튼 노출
         const debugBtn = document.getElementById('debugBtn');
-        const debugBox = document.getElementById('debugBox');
-        if (isHy) {
-            debugBtn.style.display = 'block';
-        } else {
-            debugBtn.style.display = 'none';
-            debugBox.style.display = 'none';
-        }
-
+        if (isHy) debugBtn.style.display = 'block';
+        else { debugBtn.style.display = 'none'; document.getElementById('debugBox').style.display = 'none'; }
         ['HK', 'HH', 'HY', 'MS'].forEach(id => {
             const cb = document.getElementById('buff' + id);
             document.getElementById('lbl' + id).classList.toggle('active', cb.checked);
@@ -181,17 +172,9 @@
         const bHY = document.getElementById('buffHY').checked;
         const bMS = document.getElementById('buffMS').checked;
 
-        const hyRate = bMS ? 0.50 : 0.38;
         const getCB = (s) => (bHK ? s * 0.12 : 0) + (bHH ? s * 0.12 : 0);
-
-        const swC = getCB(STATS.SW), hkC = getCB(STATS.HK), spC = getCB(STATS.SP);
-        const swPre = swBase + swC, hkPre = hkBase + hkC;
-        
-        let b = 0;
-        if (bHY) {
-            const hyPre = hyBase + getCB(STATS.HY);
-            b = 10000 / Math.min(swPre, hyPre); 
-        }
+        const swPre = swBase + getCB(STATS.SW), hkPre = hkBase + getCB(STATS.HK);
+        const hyPre = hyBase + getCB(STATS.HY);
 
         function getAhaSpeed(v1, v2, v3) {
             const sorted = [v1, v2, v3].sort((a, b) => b - a);
@@ -199,43 +182,71 @@
         }
 
         function runSim(spBase) {
-            const spPre = spBase + spC;
-            const swP = swPre + (bHY ? STATS.SW * hyRate : 0);
-            const hkP = hkPre + (bHY ? STATS.HK * hyRate : 0);
-            const spP = spPre + (bHY ? STATS.SP * hyRate : 0);
-            const vAhaPre = getAhaSpeed(swPre, hkPre, spPre);
-            const vAhaPost = getAhaSpeed(swP, hkP, spP);
-            const ahaAv = bHY ? (b + (10000 - (vAhaPre * b)) / vAhaPost) : (10000 / vAhaPost);
-            const spAv = bHY ? (b + (10000 - (spPre * b)) / spP) : (10000 / spP);
-            return { ahaAv, spAv, swP, hkP, spP, vAhaPost, vAhaPre, b };
+            const spPre = spBase + getCB(STATS.SP);
+            
+            // 시점 정의
+            const tHy = bHY ? 10000 / hyPre : 0; // 히아킨 행동 시점
+            const tSlow = bHY ? 10000 / Math.min(swPre, hyPre) : 0; // 은랑/히아킨 중 느린 쪽 시점
+
+            // 상태별 속도 정의
+            const vAha0 = getAhaSpeed(swPre, hkPre, spPre);
+            
+            // 1단계: 히아킨 시점 (38% 적용)
+            const sw1 = swPre + (bHY ? STATS.SW * 0.38 : 0);
+            const hk1 = hkPre + (bHY ? STATS.HK * 0.38 : 0);
+            const sp1 = spPre + (bHY ? STATS.SP * 0.38 : 0);
+            const vAha1 = getAhaSpeed(sw1, hk1, sp1);
+
+            // 2단계: 느린 쪽 시점 (메신저 12% 추가 적용)
+            const msRate = bMS ? 0.12 : 0;
+            const swFinal = sw1 + (bHY ? STATS.SW * msRate : 0);
+            const hkFinal = hk1 + (bHY ? STATS.HK * msRate : 0);
+            const spFinal = sp1 + (bHY ? STATS.SP * msRate : 0);
+            const vAhaFinal = getAhaSpeed(swFinal, hkFinal, spFinal);
+
+            let ahaAv, spAv;
+            if (!bHY) {
+                ahaAv = 10000 / vAhaFinal;
+                spAv = 10000 / spFinal;
+            } else {
+                // 아하 거리 시뮬레이션
+                const distAha1 = vAha0 * tHy;
+                const distAha2 = vAha1 * (tSlow - tHy);
+                ahaAv = tSlow + (10000 - (distAha1 + distAha2)) / vAhaFinal;
+
+                // 스파키 거리 시뮬레이션
+                const distSp1 = spPre * tHy;
+                const distSp2 = sp1 * (tSlow - tHy);
+                spAv = tSlow + (10000 - (distSp1 + distSp2)) / spFinal;
+            }
+
+            return { ahaAv, spAv, swFinal, hkFinal, spFinal, vAhaFinal, tHy, tSlow };
         }
 
         let low = 50, high = 400, best = 400;
         for(let i=0; i<50; i++) {
             let mid = (low + high) / 2;
-            let r = runSim(mid);
-            if (r.spAv < (r.ahaAv - 0.009999)) { best = mid; high = mid; } else { low = mid; }
+            if (runSim(mid).spAv < (runSim(mid).ahaAv - 0.009999)) { best = mid; high = mid; } else { low = mid; }
         }
 
         const f = runSim(best);
-        document.getElementById('resSW').innerText = f.swP.toFixed(2);
-        document.getElementById('resHK').innerText = f.hkP.toFixed(2);
-        document.getElementById('resSP').innerText = f.spP.toFixed(2);
-        document.getElementById('resAhaV').innerText = f.vAhaPost.toFixed(2);
+        document.getElementById('resSW').innerText = f.swFinal.toFixed(2);
+        document.getElementById('resHK').innerText = f.hkFinal.toFixed(2);
+        document.getElementById('resSP').innerText = f.spFinal.toFixed(2);
+        document.getElementById('resAhaV').innerText = f.vAhaFinal.toFixed(2);
         document.getElementById('resSpTarget').innerText = best.toFixed(2);
         document.getElementById('resAhaAv').innerText = f.ahaAv.toFixed(3);
         document.getElementById('resSpAv').innerText = f.spAv.toFixed(3);
 
         document.getElementById('debugBox').innerHTML = `
             <b>[Internal High-Precision Data]</b><br>
-            - 지연 시점 (b): ${f.b.toFixed(6)} AV<br>
-            - 아하 Pre 속도: ${f.vAhaPre.toFixed(6)}<br>
-            - 아하 Post 속도: ${f.vAhaPost.toFixed(6)}<br>
+            - t1 (히아킨 행동): ${f.tHy.toFixed(6)} AV<br>
+            - t2 (느린 쪽 행동): ${f.tSlow.toFixed(6)} AV<br>
+            - 아하 최종 속도: ${f.vAhaFinal.toFixed(6)}<br>
             - AV 차이 (Aha - Sparky): ${(f.ahaAv - f.spAv).toFixed(6)}<br>
-            - 버프 배율: ${(hyRate*100).toFixed(0)}% (메신저: ${bMS?'ON':'OFF'})
+            - 메신저 추가 버프: ${bMS ? '12% 적용' : '미적용'}
         `;
     }
-    
     window.onload = updateUI;
 </script>
 
